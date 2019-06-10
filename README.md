@@ -29,7 +29,7 @@ Usage
 
 e.g.
 
-`LibCTC.RegisterCallback(self,"UNIT_SPELLCAST_START");`
+`LibCTC.RegisterCallback(self,"UNIT_SPELLCAST_STOP");`
 
 Then handle the callback as you would any of the same events in Retail - e.g.
 
