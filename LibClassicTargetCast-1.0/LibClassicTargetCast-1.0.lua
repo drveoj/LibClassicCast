@@ -103,7 +103,7 @@ function logScanner:CastPushback(unitGUID, percentageAmount, auraFaded)
     end
 end
 
-function lib.UnitCastingInfo(unit)
+function lib:UnitCastingInfo(unit)
     if unit then
         local unitGUID = UnitGUID(unit)
         if unitGUID then
@@ -115,7 +115,7 @@ function lib.UnitCastingInfo(unit)
     end
 end
 
-function lib.UnitChannelInfo(unit)
+function lib:UnitChannelInfo(unit)
     if unit then
         local unitGUID = UnitGUID(unit)
         if unitGUID then
