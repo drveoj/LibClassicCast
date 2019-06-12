@@ -153,6 +153,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
     local _, eventType, _, srcGUID, _, _, _, dstGUID,  _, dstFlags, _, spellID, spellName, _, _, _, _, resisted, blocked, absorbed = CombatLogGetCurrentEventInfo()
 
     local currTime = GetTime();
+    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
 
     if eventType == "SPELL_CAST_START" then
         local _, _, icon, castTime = GetSpellInfo(spellID)
@@ -164,8 +165,6 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         -- if reducedTime then
         --     castTime = castTime - (reducedTime * 1000)
         -- end
-
-        local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
 
         lib.spellCache[srcGUID] = {
             castID = castID,
