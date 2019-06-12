@@ -25,7 +25,7 @@ lib.callbacks = lib.callbacks or LibStub("CallbackHandler-1.0"):New(lib)
 
 lib.spellCache = {};
 
-logScanner = CreateFrame("Frame");
+local logScanner = CreateFrame("Frame");
 
 logScanner:RegisterEvent("PLAYER_LOGIN")
 
