@@ -7,15 +7,6 @@ if not lib then return end
 
 local _G = getfenv(0)
 
-local tinsert = _G.tinsert
-local unpack = _G.unpack
-local pairs = _G.pairs
-local tremove = _G.tremove
-local tsort = _G.table.sort
-local tContains = _G.tContains
-local ipairs = _G.ipairs
-local wipe = _G.wipe
-
 local channeledSpells = ns.channeledSpells
 local castTimeDecreases = ns.castTimeDecreases
 local castTimeTalentDecreases = ns.castTimeTalentDecreases
