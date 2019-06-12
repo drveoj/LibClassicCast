@@ -226,7 +226,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
     elseif eventType == "SPELL_AURA_APPLIED" then
         if castTimeDecreases[spellID] then
             -- Aura that slows casting speed was applied
-            self:CastPushback(dstGUID, namespace.castTimeDecreases[spellID])
+            self:CastPushback(dstGUID, castTimeDecreases[spellID])
             if lib.spellCache[dstGUID] and dstGUID == UnitGUID("target") then
                 lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", "target", castID, spellID)
             end
