@@ -189,6 +189,8 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         local castTime = channeledSpells[spellName]
         if castTime then
             if currTime + castTime > GetTime() then
+                local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
+                local _, _, icon = GetSpellInfo(spellID)
                 lib.spellCache[srcGUID] = {
                     castID = 0,
                     spellName = spellName,
