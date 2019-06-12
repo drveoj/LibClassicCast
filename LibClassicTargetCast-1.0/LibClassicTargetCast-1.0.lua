@@ -158,9 +158,7 @@ local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
 
 function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
     local _, eventType, _, srcGUID, _, _, _, dstGUID,  _, dstFlags, _, spellID, spellName, _, _, _, _, resisted, blocked, absorbed = CombatLogGetCurrentEventInfo()
-
     local currTime = GetTime();
-    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
     local castSrc = lib.spellCache[srcGUID]
     local castDst = lib.spellCache[dstGUID]
 
@@ -168,7 +166,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         local _, _, icon, castTime = GetSpellInfo(spellID)
         if not castTime or castTime == 0 then return end
         local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
-
+        local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
         --Reduce cast time for certain spells
         -- local reducedTime = castTimeTalentDecreases[spellName]
         -- if reducedTime then
@@ -195,6 +193,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         -- Channeled spells are started on SPELL_CAST_SUCCESS instead of stopped
         -- Also there's no castTime returned from GetSpellInfo for channeled spells so we need to get it from our own list
         local castTime = lib.channeledSpells[spellName]
+        local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
         if castTime then
             if currTime + castTime > GetTime() then
                 local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
@@ -233,11 +232,13 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
             -- Aura that slows casting speed was applied
             self:CastPushback(dstGUID, lib.castTimeDecreases[spellID])
             if castDst and dstGUID == UnitGUID("target") then
+                local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                 lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", "target", castID, spellID)
             end
         elseif lib.crowdControls[spellName] then
             if castDst then
                 if dstGUID == UnitGUID("target") then
+                    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                     lib.callbacks:Fire("UNIT_SPELLCAST_STOP", "target", castID, spellID)
                 end
                 lib.spellCache[dstGUID] = nil
@@ -249,6 +250,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         if lib.channeledSpells[spellName] then
             if castSrc then
                 if srcGUID == UnitGUID("target") then
+                    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                     lib.callbacks:Fire("UNIT_SPELLCAST_STOP", "target", castID, spellID)
                 end
                 lib.spellCache[srcGUID] = nil
@@ -258,6 +260,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
             if castDst then
                 self:CastPushback(dstGUID, lib.castTimeDecreases[spellID], true)
                 if dstGUID == UnitGUID("target") then
+                    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                     lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", "target", castID, spellID)
                 end
             end
@@ -265,6 +268,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         elseif eventType == "PARTY_KILL" or eventType == "UNIT_DIED" or eventType == "SPELL_INTERRUPT" then
             if castDst then
                 if dstGUID == UnitGUID("target") then
+                    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                     lib.callbacks:Fire("UNIT_SPELLCAST_STOP", "target", castID, spellID)
                 end
                 lib.spellCache[dstGUID] = nil
@@ -275,6 +279,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
             if castDst then
                 self:CastPushback(dstGUID)
                 if dstGUID == UnitGUID("target") then
+                    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                     lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", "target", castID, spellID)
                 end
             end
