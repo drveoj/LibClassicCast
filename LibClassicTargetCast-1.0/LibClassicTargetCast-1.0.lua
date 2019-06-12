@@ -111,21 +111,25 @@ function logScanner:CastPushback(unitGUID, percentageAmount, auraFaded)
 end
 
 function lib.UnitCastingInfo(unit)
-    local unitGUID = UnitGUID(unit)
-    if unitGUID then
-        local cast = lib.spellCache[unitGUID]
-        if cast and not cast.isChanneled then
-            return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, cast.castID, false
+    if unit then
+        local unitGUID = UnitGUID(unit)
+        if unitGUID then
+            local cast = lib.spellCache[unitGUID]
+            if cast and not cast.isChanneled then
+                return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, cast.castID, false
+            end
         end
     end
 end
 
 function lib.UnitChannelInfo(unit)
-    local unitGUID = UnitGUID(unit)
-    if unitGUID then
-        local cast = lib.spellCache[unitGUID]
-        if cast and cast.isChanneled then
-            return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, false
+    if unit then
+        local unitGUID = UnitGUID(unit)
+        if unitGUID then
+            local cast = lib.spellCache[unitGUID]
+            if cast and cast.isChanneled then
+                return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, false
+            end
         end
     end
 end
