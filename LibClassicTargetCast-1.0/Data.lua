@@ -1,18 +1,16 @@
 -- Taken from ClassicCastBars - All credit to wardz for the excellent work and the technique of getting target cast info from the CLEU
-local _, ns = ...
-local GetSpellInfo = _G.GetSpellInfo
-
 local lib = LibStub("LibClassicTargetCast-1.0", true)
 if not lib then return end
 
 local Type, Version = "Data", 1
 if lib:GetDataVersion(Type) >= Version then return end
 
+local GetSpellInfo = _G.GetSpellInfo
 -- Channeled spells does not return cast time, so we have to build our own list.
 --
 -- We use GetSpellInfo here to get the localized spell name,
 -- that way we don't have to list every spellID for an ability (diff ranks have diff id)
-ns.channeledSpells = {
+lib.channeledSpells = {
     -- MISC
     [GetSpellInfo(746)] = 7,        -- First Aid
     [GetSpellInfo(13278)] = 4,      -- Gnomish Death Ray
@@ -49,7 +47,7 @@ ns.channeledSpells = {
 -- List of abilities that makes cast time slower.
 -- Spells here have different % reduction based on spell rank,
 -- so list by spellID instead of name here so we can diff between ranks
-ns.castTimeDecreases = {
+lib.castTimeDecreases = {
     -- WARLOCK
     [1714] = 50,    -- Curse of Tongues Rank 1
     [11719] = 60,   -- Curse of Tongues Rank 2
@@ -65,7 +63,7 @@ ns.castTimeDecreases = {
 }
 
 -- Spells that often have cast time reduced by talents
-ns.castTimeTalentDecreases = {
+lib.castTimeTalentDecreases = {
     [GetSpellInfo(403)] = 1,        -- Lightning Bolt
     [GetSpellInfo(421)] = 1,        -- Chain Lightning
     [GetSpellInfo(6353)] = 2,       -- Soul Fire
@@ -92,7 +90,7 @@ ns.castTimeTalentDecreases = {
 -- List of player crowd controls
 -- We want to stop the castbar when these auras are detected
 -- as SPELL_CAST_FAILED is not triggered when a player gets CC'ed.
-ns.crowdControls = {
+lib.crowdControls = {
     [GetSpellInfo(5211)] = 1,       -- Bash
     [GetSpellInfo(24394)] = 1,      -- Intimidation
     [GetSpellInfo(853)] = 1,        -- Hammer of Justice

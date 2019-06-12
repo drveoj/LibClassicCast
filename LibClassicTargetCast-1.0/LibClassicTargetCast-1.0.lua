@@ -1,5 +1,3 @@
-local _, ns = ...
-
 local MAJOR, MINOR = "LibClassicTargetCast-1.0", 1
 local LibStub = LibStub
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
@@ -16,11 +14,6 @@ function lib.GetDataVersion(dataType)
 end
 
 local _G = getfenv(0)
-
-local channeledSpells = ns.channeledSpells
-local castTimeDecreases = ns.castTimeDecreases
-local castTimeTalentDecreases = ns.castTimeTalentDecreases
-local crowdControls = ns.crowdControls
 
 lib.callbacks = lib.callbacks or LibStub("CallbackHandler-1.0"):New(lib)
 
@@ -201,7 +194,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
     elseif eventType == "SPELL_CAST_SUCCESS" then
         -- Channeled spells are started on SPELL_CAST_SUCCESS instead of stopped
         -- Also there's no castTime returned from GetSpellInfo for channeled spells so we need to get it from our own list
-        local castTime = channeledSpells[spellName]
+        local castTime = lib.channeledSpells[spellName]
         if castTime then
             if currTime + castTime > GetTime() then
                 local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
@@ -236,13 +229,13 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         end
         lib.spellCache[srcGUID] = nil
     elseif eventType == "SPELL_AURA_APPLIED" then
-        if castTimeDecreases[spellID] then
+        if lib.castTimeDecreases[spellID] then
             -- Aura that slows casting speed was applied
-            self:CastPushback(dstGUID, castTimeDecreases[spellID])
+            self:CastPushback(dstGUID, lib.castTimeDecreases[spellID])
             if castDst and dstGUID == UnitGUID("target") then
                 lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", "target", castID, spellID)
             end
-        elseif crowdControls[spellName] then
+        elseif lib.crowdControls[spellName] then
             if castDst then
                 if dstGUID == UnitGUID("target") then
                     lib.callbacks:Fire("UNIT_SPELLCAST_STOP", "target", castID, spellID)
@@ -253,17 +246,17 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
     elseif eventType == "SPELL_AURA_REMOVED" then
         -- Channeled spells has no SPELL_CAST_* event for channel stop,
         -- so check if aura is gone instead since most (all?) channels has an aura effect
-        if channeledSpells[spellName] then
+        if lib.channeledSpells[spellName] then
             if castSrc then
                 if srcGUID == UnitGUID("target") then
                     lib.callbacks:Fire("UNIT_SPELLCAST_STOP", "target", castID, spellID)
                 end
                 lib.spellCache[srcGUID] = nil
             end
-        elseif castTimeDecreases[spellID] then
+        elseif lib.castTimeDecreases[spellID] then
              -- Aura that slows casting speed was removed
             if castDst then
-                self:CastPushback(dstGUID, castTimeDecreases[spellID], true)
+                self:CastPushback(dstGUID, lib.castTimeDecreases[spellID], true)
                 if dstGUID == UnitGUID("target") then
                     lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", "target", castID, spellID)
                 end
