@@ -2,6 +2,12 @@
 local _, ns = ...
 local GetSpellInfo = _G.GetSpellInfo
 
+local lib = LibStub("LibClassicTargetCast-1.0", true)
+if not lib then return end
+
+local Type, Version = "Data", 1
+if lib:GetDataVersion(Type) >= Version then return end
+
 -- Channeled spells does not return cast time, so we have to build our own list.
 --
 -- We use GetSpellInfo here to get the localized spell name,
@@ -170,3 +176,4 @@ namespace.pushbackImmunities = {
     [GetSpellInfo(14743)] = 1, -- Focused Casting
 }]]
 
+lib:SetDataVersion(Type, Version)

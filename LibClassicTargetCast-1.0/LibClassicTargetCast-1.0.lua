@@ -5,11 +5,21 @@ local LibStub = LibStub
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
 
+local SpellDataVersions = {}
+
+function lib.SetDataVersion(dataType, version)
+    SpellDataVersions[dataType] = version
+end
+
+function lib.GetDataVersion(dataType)
+    return SpellDataVersions[dataType] or 0
+end
+
 local _G = getfenv(0)
 
 local channeledSpells = ns.channeledSpells
 local castTimeDecreases = ns.castTimeDecreases
--- local castTimeTalentDecreases = ns.castTimeTalentDecreases
+local castTimeTalentDecreases = ns.castTimeTalentDecreases
 local crowdControls = ns.crowdControls
 
 lib.callbacks = lib.callbacks or LibStub("CallbackHandler-1.0"):New(lib)
