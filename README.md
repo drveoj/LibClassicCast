@@ -1,5 +1,7 @@
 # LibClassicTargetCast
 
+NOTE: This is a library for Addon authors to use in their addons. It won't do anything as an addon itself. 
+
 Library for handling target casts (using CLEU parsing based on ClassicCastbars) 
 
 This library is designed to mimic the builtin functions and events relating to spellcasting for your target. Not all events are possible in classic so this addon publishes a reduced set of events (using LibCallbackHandler) - 
