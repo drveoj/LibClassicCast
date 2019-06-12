@@ -109,14 +109,14 @@ function logScanner:CastPushback(unitGUID, percentageAmount, auraFaded)
     end
 end
 
-function lib:UnitCastingInfo(unit)
+function lib.UnitCastingInfo(unit)
     local unitGUID = UnitGUID(unit)
     if lib.spellCache[unitGUID] and not lib.spellCache[unitGUID].isChanneled then
         return lib.spellCache[unitGUID].spellName, lib.spellCache[unitGUID].rank, lib.spellCache[unitGUID].spellIcon, lib.spellCache[unitGUID].startTime, lib.spellCache[unitGUID].endTime, false, lib.spellCache[unitGUID].castID,false
     end
 end
 
-function lib:UnitChannelInfo(unit)
+function lib.UnitChannelInfo(unit)
     local unitGUID = UnitGUID(unit)
     if lib.spellCache[unitGUID] and lib.spellCache[unitGUID].isChanneled then
         return lib.spellCache[unitGUID].spellName, lib.spellCache[unitGUID].rank, lib.spellCache[unitGUID].spellIcon, lib.spellCache[unitGUID].startTime, lib.spellCache[unitGUID].endTime, false, false
@@ -130,14 +130,14 @@ function logScanner:PLAYER_LOGIN()
     self:UnregisterEvent("PLAYER_LOGIN")
 end
 
-function logScanner:PLAYER_ENTERING_WORLD()
+function logScanner.PLAYER_ENTERING_WORLD()
     -- Clear the Cache
     lib.spellCache = {};
     -- Fire in case consuming addon needs to initialise anything
     lib.callbacks:Fire("PLAYER_ENTERING_WORLD")
 end
 
-function logScanner:PLAYER_TARGET_CHANGED()
+function logScanner.PLAYER_TARGET_CHANGED()
     local target = UnitGUID("target")
     if lib.spellCache[target] then
         lib.callbacks:Fire("PLAYER_TARGET_CHANGED", "target", lib.spellCache[target].castID, lib.spellCache[target].spellID)
