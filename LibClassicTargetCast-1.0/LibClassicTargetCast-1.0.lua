@@ -9,7 +9,7 @@ local _G = getfenv(0)
 
 local channeledSpells = ns.channeledSpells
 local castTimeDecreases = ns.castTimeDecreases
-local castTimeTalentDecreases = ns.castTimeTalentDecreases
+-- local castTimeTalentDecreases = ns.castTimeTalentDecreases
 local crowdControls = ns.crowdControls
 
 lib.callbacks = lib.callbacks or LibStub("CallbackHandler-1.0"):New(lib)
