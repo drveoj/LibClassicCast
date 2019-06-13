@@ -109,7 +109,7 @@ function lib:UnitCastingInfo(unit)
         if unitGUID then
             local cast = lib.spellCache[unitGUID]
             if cast and not cast.isChanneled then
-                return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, cast.castID, false
+                return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, cast.castID, false, cast.spellID
             end
         end
     end
@@ -121,7 +121,7 @@ function lib:UnitChannelInfo(unit)
         if unitGUID then
             local cast = lib.spellCache[unitGUID]
             if cast and cast.isChanneled then
-                return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, false
+                return cast.spellName, cast.rank, cast.spellIcon, cast.startTime, cast.endTime, false, false, false, cast.spellID
             end
         end
     end
