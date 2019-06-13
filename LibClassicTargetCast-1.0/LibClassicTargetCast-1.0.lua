@@ -173,6 +173,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         --     castTime = castTime - (reducedTime * 1000)
         -- end
 
+        local unit = lib.unitSearcher:GetUnitID(srcGUID)
         lib.spellCache[srcGUID] = {
             castID = castID,
             spellName = spellName,
@@ -183,13 +184,11 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
             maxValue = castTime,
             isChanneled = false,
             spellID = spellID,
+            unit = unit
         }
-
-        local unit = lib.unitSearcher:GetUnitID(srcGUID)
         if unit then
             lib.callbacks:Fire("UNIT_SPELLCAST_START", unit, castID, spellID)
         end
-
     elseif eventType == "SPELL_CAST_SUCCESS" then
         -- Channeled spells are started on SPELL_CAST_SUCCESS instead of stopped
         -- Also there's no castTime returned from GetSpellInfo for channeled spells so we need to get it from our own list
@@ -199,8 +198,9 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
             if currTime + castTime > GetTime() then
                 local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
                 local _, _, icon = GetSpellInfo(spellID)
+                local unit = lib.unitSearcher:GetUnitID(srcGUID)
                 lib.spellCache[srcGUID] = {
-                    castID = 0,
+                    castID = castID,
                     spellName = spellName,
                     rank = rank,
                     spellIcon = icon,
@@ -209,92 +209,74 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
                     maxValue = castTime,
                     isChanneled = true,
                     spellID = spellID,
+                    unit = unit
                 }
-
-                local unit = lib.unitSearcher:GetUnitID(srcGUID)
                 if unit then
                     lib.callbacks:Fire("UNIT_SPELLCAST_CHANNEL_START", unit, castID, spellID)
                 end
             elseif castSrc then -- assume the channeled spell is ending
+                local unit, castID, spellID = castSrc.unit, castSrc.castID, castSrc.spellID
                 lib.spellCache[srcGUID] = nil
-                local unit = lib.unitSearcher:GetUnitID(srcGUID)
-                if unit then
+                if castSrc.unit then
                     lib.callbacks:Fire("UNIT_SPELLCAST_CHANNEL_STOP", unit, castID, spellID)
                 end
             end
         end
-        lib.spellCache[srcGUID] = nil
-        local unit = lib.unitSearcher:GetUnitID(srcGUID)
-        if unit then
-            lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
+        if castSrc then
+            local unit, castID, spellID = castSrc.unit, castSrc.castID, castSrc.spellID
+            lib.spellCache[srcGUID] = nil
+            if unit then
+                lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
+            end
         end
     elseif eventType == "SPELL_CAST_FAILED" and castSrc then
+        local unit, castID, spellID = castSrc.unit, castSrc.castID, castSrc.spellID
         lib.spellCache[srcGUID] = nil
-        local unit = lib.unitSearcher:GetUnitID(srcGUID)
         if unit then
-            lib.callbacks:Fire("UNIT_SPELLCAST_FAILED", unit, castSrc.castID, castSrc.spellID)
+            lib.callbacks:Fire("UNIT_SPELLCAST_FAILED", unit, castID, spellID)
         end
-    elseif eventType == "SPELL_AURA_APPLIED" then
+    elseif eventType == "SPELL_AURA_APPLIED" and castDst then
         if lib.castTimeDecreases[spellID] then
             -- Aura that slows casting speed was applied
             self:CastPushback(dstGUID, lib.castTimeDecreases[spellID])
-            local unit = lib.unitSearcher:GetUnitID(dstGUID)
-            if unit then
-                local castID = ""..dstGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
-                lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", unit, castID, spellID)
+            if castDst.unit then
+                lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", castDst.unit, castDst.castID, castDst.spellID)
             end
         elseif lib.crowdControls[spellName] then
-            if castDst then
-                lib.spellCache[dstGUID] = nil
-                local unit = lib.unitSearcher:GetUnitID(dstGUID)
-                if unit then
-                    local castID = ""..dstGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
-                    lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
-                end
+            local unit, castID, spellID = castDst.unit, castDst.castID, castDst.spellID
+            lib.spellCache[dstGUID] = nil
+            if unit then
+                lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
             end
         end
     elseif eventType == "SPELL_AURA_REMOVED" then
         -- Channeled spells has no SPELL_CAST_* event for channel stop,
         -- so check if aura is gone instead since most (all?) channels has an aura effect
-        if lib.channeledSpells[spellName] then
-            if castSrc then
-                lib.spellCache[srcGUID] = nil
-                local unit = lib.unitSearcher:GetUnitID(srcGUID)
-                if unit then
-                    local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
-                    lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
-                end
+        if castSrc and lib.channeledSpells[spellName] then
+            local unit, castID, spellID = castSrc.unit, castSrc.castID, castSrc.spellID
+            lib.spellCache[srcGUID] = nil
+            if castSrc.unit then
+                lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
             end
-        elseif lib.castTimeDecreases[spellID] then
+        elseif castDst and lib.castTimeDecreases[spellID] then
              -- Aura that slows casting speed was removed
-            if castDst then
-                self:CastPushback(dstGUID, lib.castTimeDecreases[spellID], true)
-                local unit = lib.unitSearcher:GetUnitID(dstGUID)
-                if unit then
-                    local castID = ""..dstGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
-                    lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", unit, castID, spellID)
-                end
+            self:CastPushback(dstGUID, lib.castTimeDecreases[spellID], true)
+            if castDst.unit then
+                lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", castDst.unit, castDst.castID, castDst.spellID)
             end
         end
-        elseif eventType == "PARTY_KILL" or eventType == "UNIT_DIED" or eventType == "SPELL_INTERRUPT" then
-            if castDst then
-                lib.spellCache[dstGUID] = nil
-                local unit = lib.unitSearcher:GetUnitID(dstGUID)
-                if unit then
-                    local castID = ""..dstGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
-                    lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
-                end
+    elseif castDst and (eventType == "PARTY_KILL" or eventType == "UNIT_DIED" or eventType == "SPELL_INTERRUPT") then
+            local unit, castID, spellID = castDst.unit, castDst.castID, castDst.spellID
+            lib.spellCache[dstGUID] = nil
+            if unit then
+                lib.callbacks:Fire("UNIT_SPELLCAST_STOP", unit, castID, spellID)
             end
-    elseif eventType == "SWING_DAMAGE" or eventType == "ENVIRONMENTAL_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_DAMAGE" then
+    elseif castDst and (eventType == "SWING_DAMAGE" or eventType == "ENVIRONMENTAL_DAMAGE" or eventType == "RANGE_DAMAGE" or eventType == "SPELL_DAMAGE") then
         if resisted or blocked or absorbed then return end
         if bit_band(dstFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then -- is player
-            if castDst then
-                self:CastPushback(dstGUID)
-                local unit = lib.unitSearcher:GetUnitID(dstGUID)
-                if unit then
-                    local castID = ""..dstGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
-                    lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", unit, castID, spellID)
-                end
+            self:CastPushback(dstGUID)
+            if castDst.unit then
+                lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", castDst.unit, castDst.castID, castDst.spellID)
             end
         end
     end
