@@ -268,7 +268,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         elseif lib.castTimeDecreases[spellID] then
              -- Aura that slows casting speed was removed
             if castDst then
-                lib.spellCache[srcGUID] = lib.spellCache[srcGUID] * lib.castTimeDecreases[spellID]
+                self:CastPushback(dstGUID, lib.castTimeDecreases[spellID], true)
                 local unit = lib.unitSearcher:GetUnitID(dstGUID)
                 if unit then
                     local castID = ""..dstGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
