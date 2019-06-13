@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "LibClassicTargetCast-1.0", 1
+local MAJOR, MINOR = "LibClassicCast", 1
 local LibStub = LibStub
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
