@@ -54,13 +54,13 @@ In addition LibClassicCast provides implementations for UnitCastingInfo and Unit
 4. To inquire about the spell being cast by a unit call the info functions with the same returns as Retail (note: there's some faking - e.g. currently isTrade and isNoninterruptible are returning false always - working on a fix)
 
     ```Lua
-    spellName, rank, texture, startTime, endTime, isTrade, castID, nonInterruptible = LibCTC:UnitCastingInfo(unit);
+    spellName, rank, texture, startTime, endTime, isTrade, castID, nonInterruptible = LibCC:UnitCastingInfo(unit);
     ```
 
     or for a channeled spell its:
 
     ```Lua
-    spellName, rank, texture, startTime, endTime, isTrade, nonInterruptible = LibCTC:UnitChannelInfo(unit);
+    spellName, rank, texture, startTime, endTime, isTrade, nonInterruptible = LibCC:UnitChannelInfo(unit);
     ```
 
 ## Known Issues
