@@ -273,6 +273,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
                     local castID = ""..dstGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                     lib.callbacks:Fire("UNIT_SPELLCAST_DELAYED", unit, castID, spellID)
                 end
+                lib.spellCache[srcGUID] = lib.spellCache[srcGUID] * lib.castTimeDecreases[spellID]
             end
         end
         elseif eventType == "PARTY_KILL" or eventType == "UNIT_DIED" or eventType == "SPELL_INTERRUPT" then

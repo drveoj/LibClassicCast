@@ -49,17 +49,17 @@ lib.channeledSpells = {
 -- so list by spellID instead of name here so we can diff between ranks
 lib.castTimeDecreases = {
     -- WARLOCK
-    [1714] = 50,    -- Curse of Tongues Rank 1
-    [11719] = 60,   -- Curse of Tongues Rank 2
+    [1714] = 0.5,    -- Curse of Tongues Rank 1
+    [11719] = 0.6,   -- Curse of Tongues Rank 2
 
     -- ROGUE
-    [5760] = 40,    -- Mind-Numbing Poison Rank 1
-    [8692] = 50,    -- Mind-Numbing Poison Rank 2
-    [25810] = 50,   -- Mind-Numbing Poison Rank 2 incorrect?
-    [11398] = 60,   -- Mind-Numbing Poison Rank 3
+    [5760] = 0.4,    -- Mind-Numbing Poison Rank 1
+    [8692] = 0.5,    -- Mind-Numbing Poison Rank 2
+    [25810] = 0.5,   -- Mind-Numbing Poison Rank 2 incorrect?
+    [11398] = 0.6,   -- Mind-Numbing Poison Rank 3
 
     -- ITEMS
-    [17331] = 10,   -- Fang of the Crystal Spider
+    [17331] = 0.1,   -- Fang of the Crystal Spider
 }
 
 -- Spells that often have cast time reduced by talents
