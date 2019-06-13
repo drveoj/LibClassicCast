@@ -146,10 +146,10 @@ function logScanner.PLAYER_TARGET_CHANGED()
     if target and lib.spellCache[target] then
         local cast = lib.spellCache[target]
         if cast then
-            lib.callbacks:Fire("PLAYER_TARGET_CHANGED", "target", cast.castID, cast.spellID)
+            lib.callbacks:Fire("PLAYER_TARGET_CHANGED")
         end
     else
-        lib.callbacks:Fire("PLAYER_TARGET_CHANGED", "target", nil, nil)
+        lib.callbacks:Fire("PLAYER_TARGET_CHANGED")
     end
 end
 
