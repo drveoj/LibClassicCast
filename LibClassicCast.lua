@@ -193,12 +193,12 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         -- Channeled spells are started on SPELL_CAST_SUCCESS instead of stopped
         -- Also there's no castTime returned from GetSpellInfo for channeled spells so we need to get it from our own list
         local castTime = lib.channeledSpells[spellName]
-        local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
         if castTime then
             if currTime + castTime > GetTime() then
                 local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
                 local _, _, icon = GetSpellInfo(spellID)
                 local unit = lib.unitSearcher:GetUnitID(srcGUID)
+                local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
                 lib.spellCache[srcGUID] = {
                     castID = castID,
                     spellName = spellName,
