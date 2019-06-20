@@ -32,8 +32,6 @@ function logScanner:CastPushback(unitGUID, percentageAmount, auraFaded)
     local cast = lib.spellCache[unitGUID]
     if not cast then return end
 
-    -- if cast.prevCurrTimeModValue then print("stored total:", #cast.prevCurrTimeModValue) end
-
     -- Set cast time modifier (i.e Curse of Tongues)
     if not auraFaded and percentageAmount and percentageAmount > 0 then
         if not cast.currTimeModValue or cast.currTimeModValue < percentageAmount then -- run only once unless % changed to higher val
@@ -157,7 +155,7 @@ local bit_band = _G.bit.band
 local COMBATLOG_OBJECT_TYPE_PLAYER = _G.COMBATLOG_OBJECT_TYPE_PLAYER
 
 function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
-    local _, eventType, _, srcGUID, _, _, _, dstGUID,  _, dstFlags, _, spellID, spellName, _, _, _, _, resisted, blocked, absorbed = CombatLogGetCurrentEventInfo()
+    local _, eventType, _, srcGUID, _, srcFlags, _, dstGUID,  _, dstFlags, _, spellID, spellName, _, _, _, _, resisted, blocked, absorbed = CombatLogGetCurrentEventInfo()
     local currTime = GetTime();
     local castSrc = lib.spellCache[srcGUID]
     local castDst = lib.spellCache[dstGUID]
@@ -168,10 +166,12 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
         local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
         --Reduce cast time for certain spells
-        -- local reducedTime = castTimeTalentDecreases[spellName]
-        -- if reducedTime then
-        --     castTime = castTime - (reducedTime * 1000)
-        -- end
+        local reducedTime = castTimeTalentDecreases[spellName]
+        if reducedTime then
+            if bit_band(srcFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then -- only reduce cast time for player casted ability
+                castTime = castTime - (reducedTime * 1000)
+            end
+        end
 
         local unit = lib.unitSearcher:GetUnitID(srcGUID)
         lib.spellCache[srcGUID] = {
