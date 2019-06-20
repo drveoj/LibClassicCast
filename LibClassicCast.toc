@@ -1,5 +1,5 @@
 ## Interface: 11302
-## Title: Lib: LibClassicTargetCast-1.0
+## Title: Lib: LibClassicCast-1.0
 ## Notes: Capturing target casting events and setting callbacks for same 
 ## Version: 1.1  
 ## Author: veoj, mrbuds - (based on ClassicCastbars from wardz)
