@@ -18,12 +18,13 @@ if not oldminor or minor > oldminor then
     'nameplate8', 'nameplate9', 'nameplate10', 'nameplate11', 'nameplate12', 'nameplate13', 'nameplate14', 'nameplate15', 'nameplate16', 
     'nameplate17', 'nameplate18', 'nameplate19', 'nameplate20', 'nameplate21', 'nameplate22', 'nameplate23', 'nameplate24', 
     'nameplate25', 'nameplate26', 'nameplate27', 'nameplate28', 'nameplate29', 'nameplate30', 'nameplate31', 'nameplate32', 
-    'nameplate33', 'nameplate34', 'nameplate35', 'nameplate36', 'nameplate37', 'nameplate38', 'nameplate39', 'nameplate40',
+    'nameplate33', 'nameplate34', 'nameplate35', 'nameplate36', 'nameplate37', 'nameplate38', 'nameplate39', 'nameplate40', 
   }
 
   local candidates = {}
   local validUnits = {}
   local lastSearched = 0
+
   function unitSearcher:GetAllUnitIDs()
     if lastSearched ~= GetTime() then
       lastSearched = GetTime()
@@ -54,11 +55,9 @@ if not oldminor or minor > oldminor then
 
   function unitSearcher:GetUnitID(GUID)
     local unit = validUnits[GUID]
-
     if unit and UnitGUID(unit) == GUID then
       return unit
     end
-    --if at this point, then either validUnits is no longer valid, or the GUID doesn't have a UID. Perform a search and cache the results.
     return unitSearcher:GetAllUnitIDs()[GUID]
   end
 end

@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "LibClassicCast", 1
+local MAJOR, MINOR = "LibClassicCast-1.0", 2
 local LibStub = LibStub
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
 if not lib then return end
@@ -132,14 +132,14 @@ function logScanner:PLAYER_LOGIN()
     self:UnregisterEvent("PLAYER_LOGIN")
 end
 
-function logScanner.PLAYER_ENTERING_WORLD()
+function logScanner:PLAYER_ENTERING_WORLD()
     -- Clear the Cache
     lib.spellCache = {};
     -- Fire in case consuming addon needs to initialise anything
     lib.callbacks:Fire("PLAYER_ENTERING_WORLD")
 end
 
-function logScanner.PLAYER_TARGET_CHANGED()
+function logScanner:PLAYER_TARGET_CHANGED()
     local target = UnitGUID("target")
     if target and lib.spellCache[target] then
         local cast = lib.spellCache[target]
@@ -165,22 +165,21 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         if not castTime or castTime == 0 then return end
         local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
         local castID = ""..srcGUID.."_"..spellName..""..currTime; -- Fake a cast GUID
-        --Reduce cast time for certain spells
-        local reducedTime = castTimeTalentDecreases[spellName]
+        -- Reduce cast time for certain spells
+        local reducedTime = lib.castTimeTalentDecreases[spellName]
         if reducedTime then
             if bit_band(srcFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then -- only reduce cast time for player casted ability
-                castTime = castTime - (reducedTime * 1000)
+                castTime = castTime - reducedTime
             end
         end
-
         local unit = lib.unitSearcher:GetUnitID(srcGUID)
         lib.spellCache[srcGUID] = {
             castID = castID,
             spellName = spellName,
             rank = rank,
             spellIcon = icon,
-            startTime = currTime*1000,
-            endTime = currTime*1000 + castTime,
+            startTime = currTime,
+            endTime = currTime + castTime,
             maxValue = castTime,
             isChanneled = false,
             spellID = spellID,
@@ -204,8 +203,8 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
                     spellName = spellName,
                     rank = rank,
                     spellIcon = icon,
-                    startTime = currTime*1000,
-                    endTime = currTime*1000 + castTime,
+                    startTime = currTime,
+                    endTime = currTime + castTime,
                     maxValue = castTime,
                     isChanneled = true,
                     spellID = spellID,

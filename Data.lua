@@ -1,5 +1,5 @@
 -- Taken from ClassicCastBars - All credit to wardz for the excellent work and the technique of getting target cast info from the CLEU
-local lib = LibStub("LibClassicCast", true)
+local lib = LibStub("LibClassicCast-1.0", true)
 if not lib then return end
 
 local Type, Version = "Data", 1
