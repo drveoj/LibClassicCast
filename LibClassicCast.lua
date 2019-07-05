@@ -1,3 +1,4 @@
+if select(4, GetBuildInfo()) > 20000 then return end -- don't load if we are not on classic
 local MAJOR, MINOR = "LibClassicCast-1.0", 2
 local LibStub = LibStub
 local lib = LibStub:NewLibrary(MAJOR, MINOR)
