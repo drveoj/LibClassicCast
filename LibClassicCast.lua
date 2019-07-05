@@ -178,8 +178,8 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
             spellName = spellName,
             rank = rank,
             spellIcon = icon,
-            startTime = currTime,
-            endTime = currTime + castTime,
+            startTime = currTime * 1000, -- time in milliseconds
+            endTime = currTime * 1000 + castTime,
             maxValue = castTime,
             isChanneled = false,
             spellID = spellID,
@@ -193,7 +193,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         -- Also there's no castTime returned from GetSpellInfo for channeled spells so we need to get it from our own list
         local castTime = lib.channeledSpells[spellName]
         if castTime then
-            if currTime + castTime > GetTime() then
+            if currTime + castTime > GetTime() then -- this test make no sense since currTime = GetTime()
                 local rank = GetSpellSubtext(spellID) -- async so won't work on first try but thats okay
                 local _, _, icon = GetSpellInfo(spellID)
                 local unit = lib.unitSearcher:GetUnitID(srcGUID)
@@ -203,8 +203,8 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
                     spellName = spellName,
                     rank = rank,
                     spellIcon = icon,
-                    startTime = currTime,
-                    endTime = currTime + castTime,
+                    startTime = currTime * 1000, -- time in milliseconds
+                    endTime = currTime * 1000 + castTime,
                     maxValue = castTime,
                     isChanneled = true,
                     spellID = spellID,
