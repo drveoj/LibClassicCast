@@ -169,7 +169,7 @@ function logScanner:COMBAT_LOG_EVENT_UNFILTERED()
         local reducedTime = lib.castTimeTalentDecreases[spellName]
         if reducedTime then
             if bit_band(srcFlags, COMBATLOG_OBJECT_TYPE_PLAYER) > 0 then -- only reduce cast time for player casted ability
-                castTime = castTime - reducedTime
+                castTime = castTime - (reducedTime / 1000)
             end
         end
         local unit = lib.unitSearcher:GetUnitID(srcGUID)
